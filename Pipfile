@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+google_cloud_logger = {editable = true, path = "."}
+
+[dev-packages]
+pytest = "~=3.9.3"
+pytest_mock = "~=1.10.0"
+flake8="~=3.6.0"
+yapf = "~=0.24.0"
+ipdb = "~=0.11"
+safety = "~=1.8.4"
+[requires]
+python_version = "3.6"
