@@ -13,4 +13,14 @@ setup(
     install_requires=[
         "python-json-logger>=v0.1.5",
     ],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: System :: Logging"
+    ],
     zip_safe=False)

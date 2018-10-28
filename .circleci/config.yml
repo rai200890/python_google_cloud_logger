@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+    steps:
+      - checkout
+      - run: 
+          command: |
+            sudo apt install python-pip
+            sudo pip install -U pip pipenv
+      - run:
+          command: |
+            pipenv --python python3.6
+            pipenv install --dev     
+      - run:
+          command: |
+            pipenv run pytest
+      - run:
+          command: |
+            pipenv run flake8
+      - run:
+         command: |
+            pipenv run safety check
+      - store_artifacts:
+          path: htmlcov
+          destination: htmlcov
+          
