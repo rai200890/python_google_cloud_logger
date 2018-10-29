@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="google_cloud_logger",
-    version="0.0.1",
+    version="0.0.2",
     description="Google Cloud Logger Formatter",
     url="http://github.com/rai200890/python_google_cloud_logger",
     author="Raissa Ferreira",
@@ -14,7 +14,6 @@ setup(
         "python-json-logger>=v0.1.5",
     ],
     classifiers=[
-        "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
