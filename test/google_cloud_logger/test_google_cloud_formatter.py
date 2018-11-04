@@ -13,14 +13,19 @@ def formatter():
 
 
 @pytest.fixture
-def record(mocker):
-    return mocker.Mock(
-        asctime="2018-08-30 20:40:57,245",
-        filename="_internal.py",
-        funcName="_log",
-        lineno="88",
-        levelname="WARNING",
-        getMessage=lambda: "farofa")
+def record(log_record_factory, mocker):
+    data = {
+        "asctime": "2018-08-30 20:40:57,245",
+        "filename": "_internal.py",
+        "funcName": "_log",
+        "lineno": "88",
+        "levelname": "WARNING",
+        "message": "farofa",
+        "extra_field": "extra"
+    }
+    record = log_record_factory(**data)
+    record.getMessage = mocker.Mock(return_value=data["message"])
+    return record
 
 
 def test_add_fields(formatter, record, mocker):
@@ -31,9 +36,10 @@ def test_add_fields(formatter, record, mocker):
         return_value=OrderedDict([("timestamp", "2018-08-30 20:40:57Z"),
                                   ("severity", "WARNING"), ("message",
                                                             "farofa"),
-                                  ("metadata", None),
                                   ("labels", {
-                                      "extra": "extra_args"
+                                      "type": "python-application"
+                                  }), ("metadata", {
+                                      "userLabels": {}
                                   }),
                                   ("sourceLocation", {
                                       "file": "_internal.py",
@@ -51,8 +57,8 @@ def test_make_entry(formatter, record):
     assert entry["timestamp"] == "2018-08-30T20:40:57.245000Z"
     assert entry["severity"] == "WARNING"
     assert entry["message"] == "farofa"
-    assert entry["metadata"] == {"userLabels": None}
-    assert entry["labels"] is not None
+    assert entry["metadata"]["userLabels"]["extra_field"] == "extra"
+    assert entry["labels"] == {"type": "python-application"}
     assert entry["sourceLocation"] == {
         "file": "_internal.py",
         "function": "_log",
@@ -60,14 +66,16 @@ def test_make_entry(formatter, record):
     }
 
 
-def test_make_labels(formatter, record):
-    labels = formatter.make_labels(record)
+def test_make_labels(formatter):
+    labels = formatter.make_labels()
 
-    assert labels["type"] == "python-application"
+    assert labels == {"type": "python-application"}
 
 
 def test_make_metadata(formatter, record):
-    assert formatter.make_metadata(record) == {"userLabels": None}
+    metadata = formatter.make_metadata(record)
+
+    assert metadata["userLabels"]["extra_field"] == "extra"
 
 
 def test_make_source_location(formatter, record):
