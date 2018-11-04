@@ -2,7 +2,6 @@ from setuptools import setup
 
 __VERSION__ = "0.1.0"
 
-
 setup(
     name="google_cloud_logger",
     version=__VERSION__,
