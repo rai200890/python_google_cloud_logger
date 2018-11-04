@@ -1,4 +1,5 @@
 from datetime import datetime
+import inspect
 
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -13,24 +14,30 @@ class GoogleCloudFormatter(JsonFormatter):
         self.application_info = kwargs.pop("application_info", {})
         super(GoogleCloudFormatter, self).__init__(*args, **kwargs)
 
+    def _get_extra_fields(self, record):
+        fields = set(field for field in record.__dict__.keys()
+                     if not inspect.ismethod(field)).difference(
+                         set(self.reserved_attrs.keys()))
+        return {key: getattr(record, key) for key in fields if key}
+
     def add_fields(self, log_record, record, _message_dict):
         entry = self.make_entry(record)
         for key, value in entry.items():
             log_record[key] = value
 
-    def make_labels(self, record):
-        fields = set(record.__dict__.keys()).difference(
-            set(self.reserved_attrs.keys()))
-        extra = {key: getattr(record, key) for key in fields}
-        return {**self.application_info, **extra}
+    def make_labels(self):
+        return self.application_info
+
+    def make_user_labels(self, record):
+        return self._get_extra_fields(record)
 
     def make_entry(self, record):
         return {
             "timestamp": self.format_timestamp(record.asctime),
             "severity": self.format_severity(record.levelname),
             "message": record.getMessage(),
+            "labels": self.make_labels(),
             "metadata": self.make_metadata(record),
-            "labels": self.make_labels(record),
             "sourceLocation": self.make_source_location(record)
         }
 
@@ -49,8 +56,8 @@ class GoogleCloudFormatter(JsonFormatter):
         }
         return levels[level_name.upper()]
 
-    def make_metadata(self, _record):
-        return {"userLabels": None}
+    def make_metadata(self, record):
+        return {"userLabels": self.make_user_labels(record)}
 
     def make_source_location(self, record):
         return {
