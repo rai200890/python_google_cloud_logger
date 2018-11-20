@@ -8,35 +8,32 @@ jobs:
     steps:
       - checkout
       - run: 
-          command: |
-            sudo apt install python-pip
-            sudo pip install -U pip pipenv
+          name: Install OS dependencies
+          command: make setup-os
       - run:
+          name: Install Code Climate Test Reporter Tool
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
       - run:
-          command: |
-            pipenv --python python3.6
-            pipenv install --dev
-      - run:
-          command: |
-            pipenv run pytest
-            ./cc-test-reporter format-coverage coverage/coverage.xml -t coverage.py
-            ./cc-test-reporter upload-coverage
+          name: Install package dependencies
+          command: make setup
       - run:
           command: |
             ./cc-test-reporter before-build
       - run:
+          name: Run unit tests
+          command: make test
+      - run:
+          name: Upload test coverage to Code Climate
           command: |
-            pipenv run pytest
+            ./cc-test-reporter format-coverage coverage/coverage.xml -t coverage.py
+            ./cc-test-reporter upload-coverage
       - run:
           command: |
-            pipenv run flake8
-      - run:
-         command: |
-            pipenv run safety check
+            ./cc-test-reporter after-build -t coverage.py
+      - run: 
+          command: make check
       - store_artifacts:
-          path: htmlcov
-          destination: htmlcov
-          
+          destination: coverage
+          path: coverage

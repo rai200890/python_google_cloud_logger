@@ -14,5 +14,7 @@ flake8 = "~=3.6.0"
 yapf = "~=0.24.0"
 ipdb = "~=0.11"
 safety = "~=1.8.4"
+twine = "~=1.12.1"
+
 [requires]
 python_version = "3.6"
