@@ -6,7 +6,7 @@ setup-os:
 .PHONY: setup
 setup:
 	pipenv --rm || true
-	pipenv --python python3.6
+	pipenv --python python3.7
 	pipenv install --dev
 
 .PHONY: test

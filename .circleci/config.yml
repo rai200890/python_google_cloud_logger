@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:3.7.1
         environment:
           CC_TEST_REPORTER_ID: 9f8a5da723397006023534dc6c5e32fc95d38bf7a92ae0e43530dba2a726722e
     steps:
@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Upload test coverage to Code Climate
           command: |
-            ./cc-test-reporter format-coverage coverage/coverage.xml -t coverage.py
+            ./cc-test-reporter format-coverage coverage.xml -t coverage.py
             ./cc-test-reporter upload-coverage
       - run:
           command: |
@@ -35,5 +35,41 @@ jobs:
       - run: 
           command: make check
       - store_artifacts:
-          destination: coverage
-          path: coverage
+          destination: htmlcov
+          path: htmlcov
+  deploy:
+    docker:
+      - image: circleci/python:3.7.1
+    steps:
+      - checkout
+      - run: 
+          name: Install OS dependencies
+          command: make setup-os
+      - run: 
+          name: Install package dependencies
+          command: make setup      
+      - run:
+        name: init .pypirc
+        command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+        name: Publish Package on Pypi
+        command: make release 
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
