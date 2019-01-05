@@ -15,9 +15,11 @@ class GoogleCloudFormatter(JsonFormatter):
         super(GoogleCloudFormatter, self).__init__(*args, **kwargs)
 
     def _get_extra_fields(self, record):
-        fields = set(field for field in record.__dict__.keys()
-                     if not inspect.ismethod(field)).difference(
-                         set(self.reserved_attrs.keys()))
+        if hasattr(record, "extra"):
+            return record.extra
+        fields = set(
+            field for field in record.__dict__.keys() if not inspect.ismethod(field)
+        ).difference(set(self.reserved_attrs.keys()))
         return {key: getattr(record, key) for key in fields if key}
 
     def add_fields(self, log_record, record, _message_dict):
@@ -38,12 +40,11 @@ class GoogleCloudFormatter(JsonFormatter):
             "message": record.getMessage(),
             "labels": self.make_labels(),
             "metadata": self.make_metadata(record),
-            "sourceLocation": self.make_source_location(record)
+            "sourceLocation": self.make_source_location(record),
         }
 
     def format_timestamp(self, asctime):
-        return datetime.strptime(asctime,
-                                 "%Y-%m-%d %H:%M:%S,%f").isoformat("T") + "Z"
+        return datetime.strptime(asctime, "%Y-%m-%d %H:%M:%S,%f").isoformat("T") + "Z"
 
     def format_severity(self, level_name):
         levels = {
@@ -52,7 +53,7 @@ class GoogleCloudFormatter(JsonFormatter):
             "ERROR": "ERROR",
             "WARNING": "WARNING",
             "INFO": "INFO",
-            "DEBUG": "DEBUG"
+            "DEBUG": "DEBUG",
         }
         return levels[level_name.upper()]
 
@@ -63,5 +64,5 @@ class GoogleCloudFormatter(JsonFormatter):
         return {
             "file": record.filename,
             "line": record.lineno,
-            "function": record.funcName
+            "function": record.funcName,
         }
