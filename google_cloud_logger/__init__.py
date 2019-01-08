@@ -1,5 +1,7 @@
-from datetime import datetime
 import inspect
+import traceback
+from datetime import datetime
+from io import StringIO
 
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -57,7 +59,22 @@ class GoogleCloudFormatter(JsonFormatter):
         }
         return levels[level_name.upper()]
 
+    def make_exception(self, record):
+        with StringIO() as buf:
+            exception_info = record.exc_info
+            traceback.print_tb(exception_info[2], file=buf)
+            return {
+                "class": record.exc_info[0],
+                "message": record.exc_info[1],
+                "traceback": buf.getvalue(),
+            }
+
     def make_metadata(self, record):
+        if record.exc_info:
+            return {
+                "userLabels": self.make_user_labels(record),
+                "exception": self.make_exception(record),
+            }
         return {"userLabels": self.make_user_labels(record)}
 
     def make_source_location(self, record):
