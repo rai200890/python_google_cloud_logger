@@ -15,6 +15,7 @@ yapf = "~=0.24.0"
 ipdb = "~=0.11"
 safety = "~=1.8.4"
 twine = "~=1.12.1"
+pyyaml = ">=4.2b4"
 
 [requires]
 python_version = "3.7"

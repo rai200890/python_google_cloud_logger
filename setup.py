@@ -20,6 +20,7 @@ setup(
     python_requires=">=3.4.*",
     install_requires=[
         "python-json-logger>=0.1.10",
+        "pyyaml>=4.2b1"
     ],
     classifiers=[
         "Environment :: Web Environment",
