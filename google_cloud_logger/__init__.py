@@ -73,7 +73,7 @@ class GoogleCloudFormatter(JsonFormatter):
             }
 
     def make_metadata(self, record):
-        if record.exc_info:
+        if getattr(record, "exc_info", None):
             return {
                 "userLabels": self.make_user_labels(record),
                 "exception": self.make_exception(record),
