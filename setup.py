@@ -4,7 +4,7 @@ with open("README.md", "r") as output:
     long_description = output.read()
 
 
-__VERSION__ = "0.1.1"
+__VERSION__ = "0.2.0"
 
 setup(
     name="google_cloud_logger",
@@ -19,7 +19,7 @@ setup(
     packages=find_packages(),
     python_requires=">=3.4.*",
     install_requires=[
-        "python-json-logger>=0.1.10",
+        "python-json-logger>=0.1.10"
     ],
     classifiers=[
         "Environment :: Web Environment",
