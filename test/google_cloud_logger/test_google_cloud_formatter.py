@@ -3,6 +3,7 @@ from collections import OrderedDict
 import pytest
 from google_cloud_logger import GoogleCloudFormatter
 
+
 # from https://stackoverflow.com/a/19258720
 class FakeCode(object):
     def __init__(self, co_filename, co_name):
@@ -64,7 +65,9 @@ def record_with_extra_attribute(log_record_factory, mocker):
         "lineno": "88",
         "levelname": "WARNING",
         "message": "farofa",
-        "extra": {"extra_field": "extra"},
+        "extra": {
+            "extra_field": "extra"
+        },
     }
     record = log_record_factory(**data)
     record.getMessage = mocker.Mock(return_value=data["message"])
@@ -95,19 +98,25 @@ def test_add_fields(formatter, record, mocker):
     mocker.patch.object(
         formatter,
         "make_entry",
-        return_value=OrderedDict(
-            [
-                ("timestamp", "2018-08-30 20:40:57Z"),
-                ("severity", "WARNING"),
-                ("message", "farofa"),
-                ("labels", {"type": "python-application"}),
-                ("metadata", {"userLabels": {}}),
-                (
-                    "sourceLocation",
-                    {"file": "_internal.py", "function": "_log", "line": "88"},
-                ),
-            ]
-        ),
+        return_value=OrderedDict([
+            ("timestamp", "2018-08-30 20:40:57Z"),
+            ("severity", "WARNING"),
+            ("message", "farofa"),
+            ("labels", {
+                "type": "python-application"
+            }),
+            ("metadata", {
+                "userLabels": {}
+            }),
+            (
+                "sourceLocation",
+                {
+                    "file": "_internal.py",
+                    "function": "_log",
+                    "line": "88"
+                },
+            ),
+        ]),
     )
     formatter.add_fields(log_record, record, {})
 
@@ -141,7 +150,8 @@ def test_make_metadata(formatter, record):
     assert metadata["userLabels"]["extra_field"] == "extra"
 
 
-def test_make_metadata_with_extra_attribute(formatter, record_with_extra_attribute):
+def test_make_metadata_with_extra_attribute(formatter,
+                                            record_with_extra_attribute):
     metadata = formatter.make_metadata(record_with_extra_attribute)
 
     assert metadata["userLabels"]["extra_field"] == "extra"
@@ -166,10 +176,8 @@ def test_make_source_location(formatter, record):
 
 
 def test_format_timestamp(formatter):
-    assert (
-        formatter.format_timestamp("2018-08-30 20:40:57,245")
-        == "2018-08-30T20:40:57.245000Z"
-    )
+    assert (formatter.format_timestamp("2018-08-30 20:40:57,245") ==
+            "2018-08-30T20:40:57.245000Z")
 
 
 @pytest.mark.parametrize(
