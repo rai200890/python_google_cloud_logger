@@ -96,7 +96,9 @@ def test_make_metadata(formatter, record):
     assert metadata["userLabels"]["extra_field"] == "extra"
 
 
-def test_make_metadata_with_extra_attribute(formatter, record_with_extra_attribute):
+def test_make_metadata_with_extra_attribute(
+        formatter,
+        record_with_extra_attribute):
     metadata = formatter.make_metadata(record_with_extra_attribute)
 
     assert metadata["userLabels"]["extra_field"] == "extra"

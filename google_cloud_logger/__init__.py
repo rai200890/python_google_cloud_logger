@@ -19,9 +19,10 @@ class GoogleCloudFormatter(JsonFormatter):
     def _get_extra_fields(self, record):
         if hasattr(record, "extra"):
             return record.extra
-        fields = set(
-            field for field in record.__dict__.keys() if not inspect.ismethod(field)
-        ).difference(set(self.reserved_attrs.keys()))
+        attributes = (field for field in record.__dict__.keys()
+                      if not inspect.ismethod(field))
+
+        fields = set(attributes).difference(set(self.reserved_attrs.keys()))
         return {key: getattr(record, key) for key in fields if key}
 
     def add_fields(self, log_record, record, _message_dict):
@@ -46,7 +47,8 @@ class GoogleCloudFormatter(JsonFormatter):
         }
 
     def format_timestamp(self, asctime):
-        return datetime.strptime(asctime, "%Y-%m-%d %H:%M:%S,%f").isoformat("T") + "Z"
+        datetime_format = "%Y-%m-%d %H:%M:%S,%f"
+        return datetime.strptime(asctime, datetime_format).isoformat("T") + "Z"
 
     def format_severity(self, level_name):
         levels = {
@@ -70,7 +72,7 @@ class GoogleCloudFormatter(JsonFormatter):
             }
 
     def make_metadata(self, record):
-        if record.exc_info:
+        if hasattr(record, "exc_info"):
             return {
                 "userLabels": self.make_user_labels(record),
                 "exception": self.make_exception(record),
