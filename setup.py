@@ -4,7 +4,7 @@ with open("README.md", "r") as output:
     long_description = output.read()
 
 
-__VERSION__ = "0.1.1"
+__VERSION__ = "0.2.0"
 
 setup(
     name="google_cloud_logger",

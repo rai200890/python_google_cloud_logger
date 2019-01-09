@@ -20,7 +20,7 @@ class GoogleCloudFormatter(JsonFormatter):
         if hasattr(record, "extra"):
             return record.extra
         attributes = (field for field in record.__dict__.keys()
-                      if not inspect.ismethod(field))
+                      if not inspect.ismethod(fieldpython_google_cloud_logger))
 
         fields = set(attributes).difference(set(self.reserved_attrs.keys()))
         return {key: getattr(record, key) for key in fields if key}
